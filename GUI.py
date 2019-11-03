@@ -18,23 +18,20 @@ clc = pygame.time.Clock()
 # Board
 b = board.Board()
 
-
-def rect(s):
-    top, left = s.x * SQUAREH, s.y * SQUAREW
-    return pygame.Rect(left, top, SQUAREW, SQUAREH)
+all_rects = [[pygame.Rect(j*SQUAREW, i*SQUAREH, SQUAREW, SQUAREH) for j in range(8)] for i in range(8)]
 
 
 def drawboard(bd):
     for i in range(8):
         for j in range(8):
             if (i + j) % 2 == 0:
-                pygame.draw.rect(screen, (240, 240, 240), rect(bd.squares[i][j]))
+                pygame.draw.rect(screen, (240, 240, 240), all_rects[i][j])
             else:
-                pygame.draw.rect(screen, (100, 100, 100), rect(bd.squares[i][j]))
+                pygame.draw.rect(screen, (100, 100, 100), all_rects[i][j])
 
 
 # pieces
-white_king = pygame.transform.scale(pygame.image.load('assets/2000px-Chess_Pieces_Sprite_01.png'), (SQUAREW, SQUAREH))
+white_king = pygame.transform.scale(pygame.image.load('assets/2000px-Chess_Pieces_Sprite_01.png'), (SQUAREW , SQUAREH))
 white_queen = pygame.transform.scale(pygame.image.load('assets/2000px-Chess_Pieces_Sprite_02.png'), (SQUAREW, SQUAREH))
 white_bishop = pygame.transform.scale(pygame.image.load('assets/2000px-Chess_Pieces_Sprite_03.png'), (SQUAREW, SQUAREH))
 white_knight = pygame.transform.scale(pygame.image.load('assets/2000px-Chess_Pieces_Sprite_04.png'), (SQUAREW, SQUAREH))
@@ -51,31 +48,32 @@ black_pawn = pygame.transform.scale(pygame.image.load('assets/2000px-Chess_Piece
 def draw_pieces(bd):
     for i in range(8):
         for j in range(8):
-            sq = bd.squares[i][j]
+            sq = b.squares[i][j]
+            rect = all_rects[i][j]
             if sq.p.name == 'k' and sq.p.color == 'w':
-                screen.blit(white_king, rect(sq))
+                screen.blit(white_king, rect)
             if sq.p.name == 'q' and sq.p.color == 'w':
-                screen.blit(white_queen, rect(sq))
+                screen.blit(white_queen, rect)
             if sq.p.name == 'b' and sq.p.color == 'w':
-                screen.blit(white_bishop, rect(sq))
+                screen.blit(white_bishop, rect)
             if sq.p.name == 'c' and sq.p.color == 'w':
-                screen.blit(white_knight, rect(sq))
+                screen.blit(white_knight, rect)
             if sq.p.name == 'r' and sq.p.color == 'w':
-                screen.blit(white_rook, rect(sq))
+                screen.blit(white_rook, rect)
             if sq.p.name == 'p' and sq.p.color == 'w':
-                screen.blit(white_pawn, rect(sq))
+                screen.blit(white_pawn, rect)
             if sq.p.name == 'k' and sq.p.color == 'b':
-                screen.blit(black_king, rect(sq))
+                screen.blit(black_king, rect)
             if sq.p.name == 'q' and sq.p.color == 'b':
-                screen.blit(black_queen, rect(sq))
+                screen.blit(black_queen, rect)
             if sq.p.name == 'b' and sq.p.color == 'b':
-                screen.blit(black_rook, rect(sq))
+                screen.blit(black_bishop, rect)
             if sq.p.name == 'c' and sq.p.color == 'b':
-                screen.blit(black_knight, rect(sq))
+                screen.blit(black_knight, rect)
             if sq.p.name == 'r' and sq.p.color == 'b':
-                screen.blit(black_rook, rect(sq))
+                screen.blit(black_rook, rect)
             if sq.p.name == 'p' and sq.p.color == 'b':
-                screen.blit(black_pawn, rect(sq))
+                screen.blit(black_pawn, rect)
 
 
 b.initiate()
@@ -86,6 +84,7 @@ while run:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             run = 0
+        # if event.type == pygame.MOUSEBUTTONDOWN:
 
     drawboard(b)
     draw_pieces(b)
