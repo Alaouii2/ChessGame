@@ -2,7 +2,6 @@ import pygame
 import board
 import move
 import player
-import copy
 
 
 def opposite_color(color):
@@ -13,6 +12,7 @@ def opposite_color(color):
     else:
         opp = '0'
     return opp
+
 
 SIZE = W, H = 512, 512
 CAPTION = 'ChessGame with Python3'
@@ -120,14 +120,15 @@ while run:
                     for j in range(8):
                         try:
                             rect = hitboxes[(i, j, color)]
+                            if rect.collidepoint(mouse_x, mouse_y):
+                                print(rect)
+                                dragging = True
+                                init = start_x, start_y = i, j
+                                offset_x = rect.x - mouse_x
+                                offset_y = rect.y - mouse_y
+                                break
                         except KeyError:
                             continue
-                        if rect.collidepoint(mouse_x, mouse_y):
-                            print('collide')
-                            dragging = True
-                            init = start_x, start_y = i, j
-                            offset_x = rect.x - mouse_x
-                            offset_y = rect.y - mouse_y
 
         elif event.type == pygame.MOUSEMOTION:
             if dragging:
