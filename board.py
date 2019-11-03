@@ -157,7 +157,7 @@ class Board:
     def stalemate(self, color):
         last_6moves = self.moves[-6:]
         if len(last_6moves) == 6:
-            if last_6moves[1:] == last_6moves[:-1]:
+            if last_6moves[:2] == last_6moves[2:4] == last_6moves[4:6]:
                 return True
         if (not self.check(color)) and self.allmoves(color) == []:
             return True
