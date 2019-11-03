@@ -91,7 +91,7 @@ def main():
                 while True:
                     try:
                         inp = input('Replay? [y/n]')
-                        if not inp in ['y', 'n']:
+                        if inp not in ['y', 'n']:
                             raise ValueError
                     except ValueError:
                         print('Invalid input')
