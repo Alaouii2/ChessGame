@@ -1,10 +1,9 @@
 import move
 import square
 import piece
-import copy
+from copy import copy, deepcopy
 
 placeholder = piece.Piece('0')
-
 
 def opposite_color(color):
     if color == 'b':
@@ -26,6 +25,7 @@ class Board:
         }
         self.last_state = None
         self.moves = []
+        self.last_move = (None, None)
         self.did_king_move = {
             'w': False, 'b': False
         }
@@ -71,8 +71,8 @@ class Board:
         self.append_piece(piece.Pawn('w'), 6, 7)
 
     def execute(self, m):
-        start = copy.copy(m.start)
-        finish = copy.copy(m.finish)
+        start = copy(m.start)
+        finish = copy(m.finish)
         if start.p.name == 'k':
             if start.p.color == 'w':
                 self.did_king_move['w'] = True
@@ -102,7 +102,7 @@ class Board:
                 self.append_piece(placeholder, finish.x - 1, finish.y)
 
     def update(self, m):
-        self.last_state = copy.deepcopy(self)
+        self.last_state = deepcopy(self.squares)
         self.execute(m)
         print(self)
         print(self.moves)

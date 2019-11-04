@@ -2,8 +2,9 @@ import pygame
 import board
 import move
 import player
+import piece
 
-
+placeholder = piece.Piece('0')
 def opposite_color(color):
     if color == 'b':
         opp = 'w'
@@ -32,13 +33,7 @@ clc = pygame.time.Clock()
 b = board.Board()
 
 all_rects = [[pygame.Rect(j * SQUAREW, i * SQUAREH, SQUAREW, SQUAREH) for j in range(8)] for i in range(8)]
-hitboxes = {}
-for i in [0, 1, 6, 7]:
-    for j in range(8):
-        if i in [0, 1]:
-            hitboxes[(i, j, 'b')] = pygame.Rect(j * SQUAREW, i * SQUAREH, SQUAREW, SQUAREH)
-        else:
-            hitboxes[(i, j,  'w')] = pygame.Rect(j * SQUAREW, i * SQUAREH, SQUAREW, SQUAREH)
+hitboxes = [[pygame.Rect(j * SQUAREW + 4, i * SQUAREH + 4, SQUAREW - 8, SQUAREH - 8) for j in range(8)] for i in range(8)]
 
 def drawboard(bd):
     for i in range(8):
@@ -62,44 +57,60 @@ black_bishop = pygame.transform.scale(pygame.image.load('assets/2000px-Chess_Pie
 black_knight = pygame.transform.scale(pygame.image.load('assets/2000px-Chess_Pieces_Sprite_10.png'), (SQUAREW, SQUAREH))
 black_rook = pygame.transform.scale(pygame.image.load('assets/2000px-Chess_Pieces_Sprite_11.png'), (SQUAREW, SQUAREH))
 black_pawn = pygame.transform.scale(pygame.image.load('assets/2000px-Chess_Pieces_Sprite_12.png'), (SQUAREW, SQUAREH))
+empty = pygame.image.load('assets/empty.png')
+
+
+def draw_piece(p, rec):
+    if p.name == 'k' and p.color == 'w':
+        screen.blit(white_king, rec)
+    elif p.name == 'q' and p.color == 'w':
+        screen.blit(white_queen, rec)
+    elif p.name == 'b' and p.color == 'w':
+        screen.blit(white_bishop, rec)
+    elif p.name == 'c' and p.color == 'w':
+        screen.blit(white_knight, rec)
+    elif p.name == 'r' and p.color == 'w':
+        screen.blit(white_rook, rec)
+    elif p.name == 'p' and p.color == 'w':
+        screen.blit(white_pawn, rec)
+    elif p.name == 'k' and p.color == 'b':
+        screen.blit(black_king, rec)
+    elif p.name == 'q' and p.color == 'b':
+        screen.blit(black_queen, rec)
+    elif p.name == 'b' and p.color == 'b':
+        screen.blit(black_bishop, rec)
+    elif p.name == 'c' and p.color == 'b':
+        screen.blit(black_knight, rec)
+    elif p.name == 'r' and p.color == 'b':
+        screen.blit(black_rook, rec)
+    elif p.name == 'p' and p.color == 'b':
+        screen.blit(black_pawn, rec)
+    else:
+        screen.blit(empty, rec)
 
 
 def draw_pieces(bd):
-    for i in [0, 1, 6, 7]:
+    for i in range(8):
         for j in range(8):
-            sq = b.squares[i][j]
-            if sq.p.name == 'k' and sq.p.color == 'w':
-                screen.blit(white_king, hitboxes[(i, j, sq.p.color)])
-            if sq.p.name == 'q' and sq.p.color == 'w':
-                screen.blit(white_queen, hitboxes[(i, j, sq.p.color)])
-            if sq.p.name == 'b' and sq.p.color == 'w':
-                screen.blit(white_bishop, hitboxes[(i, j, sq.p.color)])
-            if sq.p.name == 'c' and sq.p.color == 'w':
-                screen.blit(white_knight, hitboxes[(i, j, sq.p.color)])
-            if sq.p.name == 'r' and sq.p.color == 'w':
-                screen.blit(white_rook, hitboxes[(i, j, sq.p.color)])
-            if sq.p.name == 'p' and sq.p.color == 'w':
-                screen.blit(white_pawn, hitboxes[(i, j, sq.p.color)])
-            if sq.p.name == 'k' and sq.p.color == 'b':
-                screen.blit(black_king, hitboxes[(i, j, sq.p.color)])
-            if sq.p.name == 'q' and sq.p.color == 'b':
-                screen.blit(black_queen, hitboxes[(i, j, sq.p.color)])
-            if sq.p.name == 'b' and sq.p.color == 'b':
-                screen.blit(black_bishop, hitboxes[(i, j, sq.p.color)])
-            if sq.p.name == 'c' and sq.p.color == 'b':
-                screen.blit(black_knight, hitboxes[(i, j, sq.p.color)])
-            if sq.p.name == 'r' and sq.p.color == 'b':
-                screen.blit(black_rook, hitboxes[(i, j, sq.p.color)])
-            if sq.p.name == 'p' and sq.p.color == 'b':
-                screen.blit(black_pawn, hitboxes[(i, j, sq.p.color)])
+            p = b.squares[i][j].p
+            draw_piece(p, all_rects[i][j])
 
 
+
+# cursor
+class Cursor:
+    def __init__(self):
+        self.p = placeholder
+        self.rect = pygame.Rect(0, 0, SQUAREW, SQUAREH)
+
+
+# initiation
 b.initiate()
 player1 = player.Player('Player1', 'w')
 player2 = player.Player('Player2', 'b')
-
+cursor = Cursor()
 dragging = False
-offset_x, offset_y, start_x, start_y, finish_x, finish_y, rect, init_rect = 0, 0, None, None, None, None, None, None
+offset_x, offset_y, start_x, start_y, finish_x, finish_y, rect = 0, 0, None, None, None, None, None
 run = 1
 turn = 1
 
@@ -115,26 +126,24 @@ while run:
         if event.type == pygame.MOUSEBUTTONDOWN:
             print('Click')
             if event.button == 1:
-                mouse_x, mouse_y = pygame.mouse.get_pos()
-                for i in [0, 1, 6, 7]:
+                mouse_pos = mouse_x, mouse_y = pygame.mouse.get_pos()
+                for i in range(8):
                     for j in range(8):
-                        try:
-                            rect = hitboxes[(i, j, color)]
-                            if rect.collidepoint(mouse_x, mouse_y):
-                                print(rect)
+                        rect = hitboxes[i][j]
+                        if rect.collidepoint(mouse_x, mouse_y):
+                            cursor.rect.center = mouse_pos
+                            if b.squares[i][j].p.color == plyer.color:
                                 dragging = True
-                                init = start_x, start_y = i, j
-                                offset_x = rect.x - mouse_x
-                                offset_y = rect.y - mouse_y
-                                break
-                        except KeyError:
-                            continue
+                                start_x, start_y = i, j
+                                p = b.squares[i][j].p
 
         elif event.type == pygame.MOUSEMOTION:
             if dragging:
-                mouse_x, mouse_y = pygame.mouse.get_pos()
-                rect.x = mouse_x + offset_x
-                rect.y = mouse_y + offset_y
+                mouse_pos = mouse_x, mouse_y = pygame.mouse.get_pos()
+                cursor.rect.center = mouse_pos
+                cursor.p = p
+                b.squares[start_x][start_y].p = placeholder
+
         elif event.type == pygame.MOUSEBUTTONUP:
             print('Drop')
             if dragging:
@@ -142,13 +151,13 @@ while run:
                 for i in range(8):
                     for j in range(8):
                         sq = all_rects[i][j]
-                        if rect.collidepoint(sq.centerx, sq.centery):
-                            print('yes')
+                        if cursor.rect.collidepoint(sq.centerx, sq.centery):
+                            b.squares[start_x][start_y].p = p
+                            cursor.p = placeholder
                             finish_x, finish_y = i, j
                             m = move.Move(b, (start_x, start_y), (finish_x, finish_y))
                             if m.is_legal():
                                 print('legal')
-                                rect.center = sq.center
                                 b.update(m)
                                 if b.stalemate(opposite_color(plyer.color)):
                                     print('Stalemate! Tie')
@@ -157,15 +166,16 @@ while run:
                                     print('Checkmate! {} wins'.format(plyer.name))
                                     run = 0
                                 turn += 1
-                            else:
-                                print(init, rect.x, rect.y)
-                                rect.center = all_rects[start_x][start_y].center
     # print(rect)
     drawboard(b)
     draw_pieces(b)
+    try:
+        draw_piece(cursor.p, cursor.rect)
+    except AttributeError:
+        pass
     # for i in range(8):
     #     for j in range(8):
-    #         pygame.draw.rect(screen,(200, 0, 0), hitboxes[(i, j]))
+    #         pygame.draw.rect(screen,(200, 0, 0), hitboxes[i][j])
 
     pygame.display.flip()
     clc.tick(FPS)

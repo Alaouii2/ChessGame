@@ -10,7 +10,6 @@ class Piece:
     def __repr__(self):
         return self.color + self.name
 
-
 class Pawn(Piece):
     def __init__(self, color):
         Piece.__init__(self, color)
