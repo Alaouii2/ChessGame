@@ -5,6 +5,8 @@ import player
 import piece
 
 placeholder = piece.Piece('0')
+
+
 def opposite_color(color):
     if color == 'b':
         opp = 'w'
@@ -33,7 +35,9 @@ clc = pygame.time.Clock()
 b = board.Board()
 
 all_rects = [[pygame.Rect(j * SQUAREW, i * SQUAREH, SQUAREW, SQUAREH) for j in range(8)] for i in range(8)]
-hitboxes = [[pygame.Rect(j * SQUAREW + 4, i * SQUAREH + 4, SQUAREW - 8, SQUAREH - 8) for j in range(8)] for i in range(8)]
+hitboxes = [[pygame.Rect(j * SQUAREW + 4, i * SQUAREH + 4, SQUAREW - 8, SQUAREH - 8) for j in range(8)] for i in
+            range(8)]
+
 
 def drawboard(bd):
     for i in range(8):
@@ -45,7 +49,7 @@ def drawboard(bd):
 
 
 # pieces
-white_king = pygame.transform.scale(pygame.image.load('assets/2000px-Chess_Pieces_Sprite_01.png'),  (SQUAREW, SQUAREH))
+white_king = pygame.transform.scale(pygame.image.load('assets/2000px-Chess_Pieces_Sprite_01.png'), (SQUAREW, SQUAREH))
 white_queen = pygame.transform.scale(pygame.image.load('assets/2000px-Chess_Pieces_Sprite_02.png'), (SQUAREW, SQUAREH))
 white_bishop = pygame.transform.scale(pygame.image.load('assets/2000px-Chess_Pieces_Sprite_03.png'), (SQUAREW, SQUAREH))
 white_knight = pygame.transform.scale(pygame.image.load('assets/2000px-Chess_Pieces_Sprite_04.png'), (SQUAREW, SQUAREH))
@@ -96,7 +100,6 @@ def draw_pieces(bd):
             draw_piece(p, all_rects[i][j])
 
 
-
 # cursor
 class Cursor:
     def __init__(self):
@@ -109,14 +112,15 @@ b.initiate()
 player1 = player.Player('Player1', 'w')
 player2 = player.Player('Player2', 'b')
 cursor = Cursor()
-dragging = False
+drag, dragging = False, False
+selected, select_x, select_y = False, None, None
 offset_x, offset_y, start_x, start_y, finish_x, finish_y, rect = 0, 0, None, None, None, None, None
 allowed = []
 run = 1
 turn = 1
 
 while run:
-    if turn:
+    if turn % 2 == 1:
         plyer = player1
     else:
         plyer = player2
@@ -129,6 +133,7 @@ while run:
                 b = b.last_state
                 turn -= 1
         if event.type == pygame.MOUSEBUTTONDOWN:
+            print('Click')
             if event.button == 1:
                 mouse_pos = mouse_x, mouse_y = pygame.mouse.get_pos()
                 for i in range(8):
@@ -136,33 +141,37 @@ while run:
                         rect = hitboxes[i][j]
                         if rect.collidepoint(mouse_x, mouse_y):
                             cursor.rect.center = mouse_pos
+                            start_x, start_y = i, j
                             if b.squares[i][j].p.color == plyer.color:
-                                dragging = True
-                                start_x, start_y = i, j
+                                drag = True
                                 p = b.squares[i][j].p
                                 for m in b.allmoves(plyer.color, pos=(i, j)):
                                     allowed.append(m)
 
         elif event.type == pygame.MOUSEMOTION:
+            if drag:
+                drag = False
+                dragging = True
             if dragging:
                 mouse_pos = mouse_x, mouse_y = pygame.mouse.get_pos()
                 cursor.rect.center = mouse_pos
                 cursor.p = p
-                b.squares[start_x][start_y].p = placeholder
 
         elif event.type == pygame.MOUSEBUTTONUP:
-            if dragging:
-                dragging = False
-                for i in range(8):
-                    for j in range(8):
-                        sq = all_rects[i][j]
-                        if cursor.rect.collidepoint(sq.centerx, sq.centery):
+            drag = False
+            cursor.p = placeholder
+            for i in range(8):
+                for j in range(8):
+                    sq = all_rects[i][j]
+                    if cursor.rect.collidepoint(sq.centerx, sq.centery):
+                        finish_x, finish_y = i, j
+                        if dragging:
+                            dragging = False
                             allowed = []
-                            b.squares[start_x][start_y].p = p
-                            cursor.p = placeholder
-                            finish_x, finish_y = i, j
                             m = move.Move(b, (start_x, start_y), (finish_x, finish_y))
+                            print(m, m.finish.p.color)
                             if m.is_legal():
+                                print('legal')
                                 b.update(m)
                                 if b.stalemate(opposite_color(plyer.color)):
                                     print('Stalemate! Tie')
@@ -171,15 +180,42 @@ while run:
                                     print('Checkmate! {} wins'.format(plyer.name))
                                     run = 0
                                 turn += 1
-    # print(rect)
+                        print(start_x, start_y, finish_x, finish_y)
+                        if start_x == finish_x and start_y == finish_y and not selected and b.squares[i][j].p.color == plyer.color:
+                            print('yes')
+                            selected = True
+                            select_x, select_y = start_x, start_y
+                            for m in b.allmoves(plyer.color, pos=(select_x, select_y)):
+                                allowed.append(m)
+                        elif start_x == finish_x and start_y == finish_y and selected:
+                            print('no')
+                            allowed = []
+                            selected = False
+                            m = move.Move(b, (select_x, select_y), (finish_x, finish_y))
+                            if m.is_legal():
+                                print('legal')
+                                b.update(m)
+                                if b.stalemate(opposite_color(plyer.color)):
+                                    print('Stalemate! Tie')
+                                    run = 0
+                                if b.checkmate(opposite_color(plyer.color)):
+                                    print('Checkmate! {} wins'.format(plyer.name))
+                                    run = 0
+                                turn += 1
+
+    # drawing
     drawboard(b)
     draw_pieces(b)
+    if dragging:
+        color = (240, 240, 240) if (start_x + start_y) % 2 == 0 else (100, 100, 100)
+        pygame.draw.rect(screen, color, all_rects[start_x][start_y])
     try:
         draw_piece(cursor.p, cursor.rect)
     except AttributeError:
         pass
     for m in allowed:
         pygame.draw.circle(screen, (0, 200, 10), all_rects[m.finish.x][m.finish.y].center, 5)
+
     pygame.display.flip()
     clc.tick(FPS)
 
