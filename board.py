@@ -93,15 +93,15 @@ class Board:
             sqf = copy(self.squares[m.start.x][5])
             self.append_piece(sqs.p, *sqf.coord)
             self.append_piece(placeholder, *sqs.coord)
-            self.last_move = (start, finish, sqs, sqf)
+            self.last_move = [start, finish, sqs, sqf]
         elif queenside:
             sqs = copy(self.squares[m.start.x][0])
             sqf = copy(self.squares[m.start.x][3])
             self.append_piece(sqs.p, *sqf.coord)
             self.append_piece(placeholder, *sqs.coord)
-            self.last_move = (start, finish, sqs, sqf)
+            self.last_move = [start, finish, sqs, sqf]
         else:
-            self.last_move = (start, finish)
+            self.last_move = [start, finish]
         if start.p.name == 'k':
             if start.p.color == 'w':
                 self.did_king_move['w'] = True
@@ -122,10 +122,12 @@ class Board:
     def update(self, m):
         self.execute(m)
         if self.promotion:
-            self.append_piece(piece.Queen(m.finish.p.color), *m.finish.coord)
+            p = piece.Queen(m.finish.p.color)
+            self.last_move.append(p.color)
+            self.append_piece(p, *m.finish.coord)
             self.promotion = False
         print(self)
-        print(self.last_move)
+        print(len(self.last_move))
 
     def allmoves(self, color, pos=None):
         l = []

@@ -84,7 +84,7 @@ class Move:
                 if self.finish.p.color == 'w':
                     return True
                 elif self.start.x == 4:
-                    last_move = self.board.moves[-1]
+                    last_move = self.board.last_move
                     if last_move[0].p.color == 'w' and last_move[0].p.name == 'p' and last_move[1].coord == (
                     4, self.finish.y):
                         self.en_passant = True

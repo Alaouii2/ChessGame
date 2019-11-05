@@ -3,7 +3,6 @@ import board
 import move
 import player
 import piece
-import copy
 
 placeholder = piece.Piece('0')
 
@@ -125,7 +124,7 @@ def takeback():
             laststart, lastfinish = b.last_move[0], b.last_move[1]
             backmove = move.Move(b, lastfinish.coord, laststart.coord)
             b.update(backmove)
-            b.squares[lastfinish.x][lastfinish.y].p = lastfinish.p
+            b.append_piece(lastfinish.p, *lastfinish.coord)
         if len(b.last_move) == 4:
             laststart1, lastfinish1 = b.last_move[0], b.last_move[1]
             laststart2, lastfinish2 = b.last_move[2], b.last_move[3]
@@ -133,6 +132,12 @@ def takeback():
             backmove1 = move.Move(b, lastfinish1.coord, laststart1.coord)
             b.update(backmove2)
             b.update(backmove1)
+        if len(b.last_move) == 3:
+            laststart, lastfinish = b.last_move[0], b.last_move[1]
+            b.append_piece(piece.Pawn(b.last_move[2]), *lastfinish.coord)
+            backmove = move.Move(b, lastfinish.coord, laststart.coord)
+            b.update(backmove)
+            b.append_piece(lastfinish.p, *lastfinish.coord)
 
 
 # initiation
@@ -148,7 +153,7 @@ run = 1
 turn = 1
 
 while run:
-    if turn :
+    if turn:
         plyer = player1
     else:
         plyer = player2
@@ -240,7 +245,7 @@ while run:
             moves.append(b.last_move)
     else:
         moves.append(b.last_move)
-
+    print(moves)
     # drawing
     drawboard(b)
     draw_pieces(b)
@@ -255,6 +260,5 @@ while run:
         pygame.draw.circle(screen, (0, 200, 10), all_rects[m.finish.x][m.finish.y].center, 5)
     pygame.display.flip()
     clc.tick(FPS)
-
 pygame.quit()
 exit()
