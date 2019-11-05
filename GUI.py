@@ -116,7 +116,7 @@ run = 1
 turn = 1
 
 while run:
-    if turn % 2 == 1:
+    if turn:
         plyer = player1
     else:
         plyer = player2
@@ -124,6 +124,10 @@ while run:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             run = 0
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_BACKSPACE:
+                b = b.last_state
+                turn -= 1
         if event.type == pygame.MOUSEBUTTONDOWN:
             print('Click')
             if event.button == 1:

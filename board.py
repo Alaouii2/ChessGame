@@ -99,12 +99,10 @@ class Board:
                 self.taken_p.get(opposite_color(finish.p.color)).append(self.squares[finish.x - 1][finish.y].p)
                 self.append_piece(placeholder, finish.x - 1, finish.y)
         if m.king_side_castling():
-            sqs = self.squares[m.start.x][7]
-            sqf = self.squares[m.start.x][5]
             print(self.squares[m.start.x][7], self.squares[m.start.x][5])
-            self.append_piece(sqs.p, *sqf.coord)
-            self.append_piece(placeholder, *sqs.coord)
-            self.moves.append((start, finish, sqs, sqf))
+            self.append_piece(self.squares[m.start.x][7].p, *self.squares[m.start.x][5].coord)
+            self.append_piece(placeholder, *self.squares[m.start.x][7].coord)
+            self.moves.append((start, finish, self.squares[m.start.x][7], self.squares[m.start.x][5]))
             print('king side')
             print(self.squares[m.start.x][7], self.squares[m.start.x][5])
         else:
@@ -120,7 +118,7 @@ class Board:
 
 
     def update(self, m):
-        self.last_state = deepcopy(self.squares)
+        self.last_state = deepcopy(self)
         self.execute(m)
         print(self)
         print(self.moves)
