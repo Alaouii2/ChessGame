@@ -3,6 +3,7 @@ import board
 import move
 import player
 import piece
+import copy
 
 placeholder = piece.Piece('0')
 
@@ -119,12 +120,19 @@ def repetition():
 
 # Takeback
 def takeback():
-    pass
-    # laststart, lastfinish = b.last_move[0], b.last_move[1]
-    # backmove = move.Move(b, lastfinish.coord, laststart.coord)
-    # print(backmove)
-    # b.squares[lastfinish[0]][lastfinish[1]] = lastfinish
-    # b.update(backmove)
+    if b.last_move != None:
+        if len(b.last_move) == 2:
+            laststart, lastfinish = b.last_move[0], b.last_move[1]
+            backmove = move.Move(b, lastfinish.coord, laststart.coord)
+            b.update(backmove)
+            b.squares[lastfinish.x][lastfinish.y].p = lastfinish.p
+        if len(b.last_move) == 4:
+            laststart1, lastfinish1 = b.last_move[0], b.last_move[1]
+            laststart2, lastfinish2 = b.last_move[2], b.last_move[3]
+            backmove2 = move.Move(b, lastfinish2.coord, laststart2.coord)
+            backmove1 = move.Move(b, lastfinish1.coord, laststart1.coord)
+            b.update(backmove2)
+            b.update(backmove1)
 
 
 # initiation
@@ -140,7 +148,7 @@ run = 1
 turn = 1
 
 while run:
-    if turn % 2 == 1:
+    if turn :
         plyer = player1
     else:
         plyer = player2
@@ -150,9 +158,10 @@ while run:
             run = 0
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_BACKSPACE:
-                if turn > 1:
+                if moves != [None]:
                     takeback()
-                    moves = moves[:-1]
+                    moves = moves[:-len(b.last_move)//2]
+                    b.last_move = moves[-1]
                     allowed = []
                     turn -= 1
         if event.type == pygame.MOUSEBUTTONDOWN:
@@ -202,7 +211,6 @@ while run:
                                 if b.checkmate(opposite_color(plyer.color)):
                                     print('Checkmate! {} wins'.format(plyer.name))
                                     run = 0
-                                moves.append(m)
                                 turn += 1
                         print(start_x, start_y, finish_x, finish_y)
                         if start_x == finish_x and start_y == finish_y and not selected and b.squares[i][
@@ -226,8 +234,12 @@ while run:
                                 if b.checkmate(opposite_color(plyer.color)):
                                     print('Checkmate! {} wins'.format(plyer.name))
                                     run = 0
-                                moves.append(m)
                                 turn += 1
+    if moves != []:
+        if b.last_move != moves[-1]:
+            moves.append(b.last_move)
+    else:
+        moves.append(b.last_move)
 
     # drawing
     drawboard(b)
@@ -241,9 +253,9 @@ while run:
         pass
     for m in allowed:
         pygame.draw.circle(screen, (0, 200, 10), all_rects[m.finish.x][m.finish.y].center, 5)
-
     pygame.display.flip()
     clc.tick(FPS)
+    print(moves)
 
 pygame.quit()
 exit()

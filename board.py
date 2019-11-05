@@ -1,7 +1,7 @@
 import move
 import square
 import piece
-from copy import copy, deepcopy
+from copy import copy
 
 placeholder = piece.Piece('0')
 
@@ -85,16 +85,15 @@ class Board:
                 self.taken_p.get(opposite_color(finish.p.color)).append(self.squares[finish.x - 1][finish.y].p)
                 self.append_piece(placeholder, finish.x - 1, finish.y)
         if kingside:
-            sqs = self.squares[m.start.x][7]
-            sqf = self.squares[m.start.x][5]
+            sqs = copy(self.squares[m.start.x][7])
+            sqf = copy(self.squares[m.start.x][5])
             self.append_piece(sqs.p, *sqf.coord)
             self.append_piece(placeholder, *sqs.coord)
-            self.last_move = (start, finish, self.squares[m.start.x][7], self.squares[m.start.x][5])
-        else:
-            self.last_move = (start, finish)
-        if queenside:
-            sqs = self.squares[m.start.x][0]
-            sqf = self.squares[m.start.x][3]
+            self.last_move = (start, finish, sqs, sqf)
+            print(self.last_move)
+        elif queenside:
+            sqs = copy(self.squares[m.start.x][0])
+            sqf = copy(self.squares[m.start.x][3])
             self.append_piece(sqs.p, *sqf.coord)
             self.append_piece(placeholder, *sqs.coord)
             self.last_move = (start, finish, sqs, sqf)
