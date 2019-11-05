@@ -31,6 +31,7 @@ class Board:
         self.did_rook_move = {
             'w': [False, False], 'b': [False, False]
         }
+        self.promotion = False
 
     def append_piece(self, p, i, j):
         self.squares[i][j].p = p
@@ -84,13 +85,15 @@ class Board:
             else:
                 self.taken_p.get(opposite_color(finish.p.color)).append(self.squares[finish.x - 1][finish.y].p)
                 self.append_piece(placeholder, finish.x - 1, finish.y)
+        if start.p.name == 'p':
+            if (start.x == 6 and finish.x == 7) or (start.x == 1 and finish.x == 0):
+                self.promotion = True
         if kingside:
             sqs = copy(self.squares[m.start.x][7])
             sqf = copy(self.squares[m.start.x][5])
             self.append_piece(sqs.p, *sqf.coord)
             self.append_piece(placeholder, *sqs.coord)
             self.last_move = (start, finish, sqs, sqf)
-            print(self.last_move)
         elif queenside:
             sqs = copy(self.squares[m.start.x][0])
             sqf = copy(self.squares[m.start.x][3])
@@ -118,6 +121,8 @@ class Board:
 
     def update(self, m):
         self.execute(m)
+        if self.promotion:
+            self.append_piece(piece.Queen(m.finish.p.color), *m.finish.coord)
         print(self)
         print(self.last_move)
 

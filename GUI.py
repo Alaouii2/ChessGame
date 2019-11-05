@@ -255,7 +255,6 @@ while run:
         pygame.draw.circle(screen, (0, 200, 10), all_rects[m.finish.x][m.finish.y].center, 5)
     pygame.display.flip()
     clc.tick(FPS)
-    print(moves)
 
 pygame.quit()
 exit()
