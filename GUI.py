@@ -129,7 +129,6 @@ while run:
                 b = b.last_state
                 turn -= 1
         if event.type == pygame.MOUSEBUTTONDOWN:
-            print('Click')
             if event.button == 1:
                 mouse_pos = mouse_x, mouse_y = pygame.mouse.get_pos()
                 for i in range(8):
@@ -152,7 +151,6 @@ while run:
                 b.squares[start_x][start_y].p = placeholder
 
         elif event.type == pygame.MOUSEBUTTONUP:
-            print('Drop')
             if dragging:
                 dragging = False
                 for i in range(8):
@@ -164,9 +162,7 @@ while run:
                             cursor.p = placeholder
                             finish_x, finish_y = i, j
                             m = move.Move(b, (start_x, start_y), (finish_x, finish_y))
-                            print(m, m.finish.p.color)
                             if m.is_legal():
-                                print('legal')
                                 b.update(m)
                                 if b.stalemate(opposite_color(plyer.color)):
                                     print('Stalemate! Tie')
