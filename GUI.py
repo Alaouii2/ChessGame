@@ -131,6 +131,7 @@ while run:
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_BACKSPACE:
                 b = b.last_state
+                allowed = []
                 turn -= 1
         if event.type == pygame.MOUSEBUTTONDOWN:
             print('Click')

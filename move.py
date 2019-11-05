@@ -1,5 +1,4 @@
 import piece
-import square
 import copy
 
 placeholder = piece.Piece('0')
@@ -44,8 +43,9 @@ class Move:
                 if self.finish.p.color == 'b':
                     return True
                 elif self.start.x == 3:
-                    if self.board.moves[-1][1] == square.Square((3, self.start.y - 1), self.start.p):
-                        self.taking = True
+                    last_move = self.board.moves[-1]
+                    if last_move[0].p.color == 'b' and last_move[0].p.name == 'p' and last_move[1].coord == (
+                    3, self.finish.y):
                         self.en_passant = True
                         return True
             if self.start.y == self.finish.y + 1 and self.start.x == self.finish.x + 1:
@@ -53,8 +53,9 @@ class Move:
                 if self.finish.p.color == 'b':
                     return True
                 elif self.start.x == 3:
-                    s = square.Square((3, self.start.y + 1), piece.Pawn('b'))
-                    if self.board.moves[-1][0].p.name == s.p.name and self.board.moves[-1][1].coord == s.coord:
+                    last_move = self.board.moves[-1]
+                    if last_move[0].p.color == 'b' and last_move[0].p.name == 'p' and last_move[1].coord == (
+                    3, self.finish.y):
                         self.en_passant = True
                         return True
         # black pawn
@@ -73,19 +74,19 @@ class Move:
                 if self.finish.p.color == 'w':
                     return True
                 elif self.start.x == 4:
-                    s = square.Square((3, self.start.y - 1), piece.Pawn('b'))
-                    if self.board.moves[-1][0].p.name == s.p.name and self.board.moves[-1][1].coord == s.coord:
-                        self.taking = True
+                    last_move = self.board.moves[-1]
+                    if last_move[0].p.color == 'w' and last_move[0].p.name == 'p' and last_move[1].coord == (
+                    4, self.finish.y):
                         self.en_passant = True
                         return True
             if self.start.y == self.finish.y - 1 and self.start.x == self.finish.x - 1:
                 self.taking = True
                 if self.finish.p.color == 'w':
                     return True
-                elif self.start.x == 6:
-                    s = square.Square((3, self.start.y + 1), piece.Pawn('b'))
-                    if self.board.moves[-1][0].p.name == s.p.name and self.board.moves[-1][1].coord == s.coord:
-                        self.taking = True
+                elif self.start.x == 4:
+                    last_move = self.board.moves[-1]
+                    if last_move[0].p.color == 'w' and last_move[0].p.name == 'p' and last_move[1].coord == (
+                    4, self.finish.y):
                         self.en_passant = True
                         return True
 
@@ -136,20 +137,20 @@ class Move:
 
     def is_legal(self):
         return ((self.is_possible() or self.king_side_castling()
-                or self.queen_side_castling()) and not self.puts_in_check())
+                 or self.queen_side_castling()) and not self.puts_in_check())
 
     def king_side_castling(self):
         start = self.start
         finish = self.finish
         color = self.start.p.color
         if self.start.p.name == 'k':
-            if not self.board.did_king_move[color] and finish.coord ==(start.x, start.y + 2):
+            if not self.board.did_king_move[color] and finish.coord == (start.x, start.y + 2):
                 if not self.board.did_rook_move[color][1]:
                     x, y = self.start.coord
                     s1 = self.board.squares[x][y + 1]
                     s2 = self.board.squares[x][y + 2]
                     if all(x.p.color == '0' for x in [s1, s2]) and \
-                        all(x not in self.board.range(opposite_color(color)) for x in [start, s1, s2]):
+                            all(x not in self.board.range(opposite_color(color)) for x in [start, s1, s2]):
                         return True
         return False
 
@@ -158,15 +159,15 @@ class Move:
         finish = self.finish
         color = self.start.p.color
         if self.start.p.name == 'k':
-                if not self.board.did_king_move[color] and finish.coord ==(start.x, start.y - 2):
-                    if not self.board.did_rook_move[color][0]:
-                        x, y = self.start.coord
-                        s1 = self.board.squares[x][y - 1]
-                        s2 = self.board.squares[x][y - 2]
-                        s3 = self.board.squares[x][y - 3]
-                        if all(x.p.color == '0' for x in [s1, s2, s3]) and \
-                                all(x not in self.board.range(opposite_color(color)) for x in [start, s1, s2]):
-                            return True
+            if not self.board.did_king_move[color] and finish.coord == (start.x, start.y - 2):
+                if not self.board.did_rook_move[color][0]:
+                    x, y = self.start.coord
+                    s1 = self.board.squares[x][y - 1]
+                    s2 = self.board.squares[x][y - 2]
+                    s3 = self.board.squares[x][y - 3]
+                    if all(x.p.color == '0' for x in [s1, s2, s3]) and \
+                            all(x not in self.board.range(opposite_color(color)) for x in [start, s1, s2]):
+                        return True
         return False
 
     def __repr__(self):
@@ -272,4 +273,3 @@ def rook_checker(move):
             move.taking = True
             return True
     return False
-

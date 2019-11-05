@@ -5,6 +5,7 @@ from copy import copy, deepcopy
 
 placeholder = piece.Piece('0')
 
+
 def opposite_color(color):
     if color == 'b':
         opp = 'w'
@@ -116,7 +117,6 @@ class Board:
                     self.did_rook_move['b'][0] = True
                 else:
                     self.did_rook_move['b'][1] = True
-
 
     def update(self, m):
         self.last_state = deepcopy(self)
