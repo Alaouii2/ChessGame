@@ -111,6 +111,7 @@ player2 = player.Player('Player2', 'b')
 cursor = Cursor()
 dragging = False
 offset_x, offset_y, start_x, start_y, finish_x, finish_y, rect = 0, 0, None, None, None, None, None
+allowed = []
 run = 1
 turn = 1
 
@@ -136,6 +137,9 @@ while run:
                                 dragging = True
                                 start_x, start_y = i, j
                                 p = b.squares[i][j].p
+                                for m in b.allmoves(plyer.color, pos=(i, j)):
+                                    allowed.append(m)
+
 
         elif event.type == pygame.MOUSEMOTION:
             if dragging:
@@ -152,10 +156,12 @@ while run:
                     for j in range(8):
                         sq = all_rects[i][j]
                         if cursor.rect.collidepoint(sq.centerx, sq.centery):
+                            allowed = []
                             b.squares[start_x][start_y].p = p
                             cursor.p = placeholder
                             finish_x, finish_y = i, j
                             m = move.Move(b, (start_x, start_y), (finish_x, finish_y))
+                            print(m, m.finish.p.color)
                             if m.is_legal():
                                 print('legal')
                                 b.update(m)
@@ -173,10 +179,8 @@ while run:
         draw_piece(cursor.p, cursor.rect)
     except AttributeError:
         pass
-    # for i in range(8):
-    #     for j in range(8):
-    #         pygame.draw.rect(screen,(200, 0, 0), hitboxes[i][j])
-
+    for m in allowed:
+        pygame.draw.circle(screen, (0, 200, 10), all_rects[m.finish.x][m.finish.y].center, 5)
     pygame.display.flip()
     clc.tick(FPS)
 

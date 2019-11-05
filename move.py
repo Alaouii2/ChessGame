@@ -39,22 +39,22 @@ class Move:
                     if self.finish.p.color == '0' and self.board.squares[self.start.x - 1][self.start.y].p.color == '0':
                         self.taking = False
                         return True
-            if self.start.y == self.finish.y - 1 and self.start.x == self.finish.x - 1:
-                self.taking = True
-                if self.finish.p.color == 'b':
-                    return True
-                elif self.start.x == 3:
-                    if self.board.last_move[1] == square.Square((3, self.start.y - 1), self.start.p):
-                        self.taking = True
-                        self.en_passant = True
-                        return True
             if self.start.y == self.finish.y - 1 and self.start.x == self.finish.x + 1:
                 self.taking = True
                 if self.finish.p.color == 'b':
                     return True
                 elif self.start.x == 3:
+                    if self.board.moves[-1][1] == square.Square((3, self.start.y - 1), self.start.p):
+                        self.taking = True
+                        self.en_passant = True
+                        return True
+            if self.start.y == self.finish.y + 1 and self.start.x == self.finish.x + 1:
+                self.taking = True
+                if self.finish.p.color == 'b':
+                    return True
+                elif self.start.x == 3:
                     s = square.Square((3, self.start.y + 1), piece.Pawn('b'))
-                    if self.board.last_move[0].p.name == s.p.name and self.board.last_move[1].coord == s.coord:
+                    if self.board.moves[-1][0].p.name == s.p.name and self.board.moves[-1][1].coord == s.coord:
                         self.en_passant = True
                         return True
         # black pawn
@@ -68,22 +68,23 @@ class Move:
                     if self.finish.p.color == '0' and self.board.squares[self.start.x + 1][self.start.y].p.color == '0':
                         self.taking = False
                         return True
-            if self.start.y == self.finish.y + 1 and self.start.x == self.finish.x + 1:
+            if self.start.y == self.finish.y + 1 and self.start.x == self.finish.x - 1:
                 self.taking = True
                 if self.finish.p.color == 'w':
                     return True
                 elif self.start.x == 4:
-                    if self.board.last_move[1] == square.Square((3, self.start.y + 1), self.start.p):
+                    s = square.Square((3, self.start.y - 1), piece.Pawn('b'))
+                    if self.board.moves[-1][0].p.name == s.p.name and self.board.moves[-1][1].coord == s.coord:
                         self.taking = True
                         self.en_passant = True
                         return True
-            if self.start.y == self.finish.y + 1 and self.start.x == self.finish.x - 1:
+            if self.start.y == self.finish.y - 1 and self.start.x == self.finish.x - 1:
                 self.taking = True
                 if self.finish.p.color == 'w':
                     return True
                 elif self.start.x == 6:
                     s = square.Square((3, self.start.y + 1), piece.Pawn('b'))
-                    if self.board.last_move[0].p.name == s.p.name and self.board.last_move[1].coord == s.coord:
+                    if self.board.moves[-1][0].p.name == s.p.name and self.board.moves[-1][1].coord == s.coord:
                         self.taking = True
                         self.en_passant = True
                         return True
@@ -142,7 +143,7 @@ class Move:
         finish = self.finish
         color = self.start.p.color
         if self.start.p.name == 'k':
-            if not self.board.did_king_move[color] and finish.coord ==(start.x, start.y - 2):
+            if not self.board.did_king_move[color] and finish.coord ==(start.x, start.y + 2):
                 if not self.board.did_rook_move[color][1]:
                     x, y = self.start.coord
                     s1 = self.board.squares[x][y + 1]
