@@ -24,8 +24,7 @@ class Board:
             'b': [],
             '0': []
         }
-        self.last_state = None
-        self.moves = []
+        self.last_move = None
         self.did_king_move = {
             'w': False, 'b': False
         }
@@ -90,17 +89,17 @@ class Board:
             sqf = self.squares[m.start.x][5]
             self.append_piece(sqs.p, *sqf.coord)
             self.append_piece(placeholder, *sqs.coord)
-            self.moves.append((start, finish, self.squares[m.start.x][7], self.squares[m.start.x][5]))
+            self.last_move = (start, finish, self.squares[m.start.x][7], self.squares[m.start.x][5])
         else:
-            self.moves.append((start, finish))
+            self.last_move = (start, finish)
         if queenside:
             sqs = self.squares[m.start.x][0]
             sqf = self.squares[m.start.x][3]
             self.append_piece(sqs.p, *sqf.coord)
             self.append_piece(placeholder, *sqs.coord)
-            self.moves.append((start, finish, sqs, sqf))
+            self.last_move = (start, finish, sqs, sqf)
         else:
-            self.moves.append((start, finish))
+            self.last_move = (start, finish)
         if start.p.name == 'k':
             if start.p.color == 'w':
                 self.did_king_move['w'] = True
@@ -119,13 +118,9 @@ class Board:
                     self.did_rook_move['b'][1] = True
 
     def update(self, m):
-        self.last_state = deepcopy(self)
         self.execute(m)
         print(self)
-        print(self.moves)
-
-    def takeback(self):
-        return self.last_state
+        print(self.last_move)
 
     def allmoves(self, color, pos=None):
         l = []
@@ -172,10 +167,6 @@ class Board:
         return False
 
     def stalemate(self, color):
-        last_6moves = self.moves[-6:]
-        if len(last_6moves) == 6:
-            if last_6moves[:2] == last_6moves[2:4] == last_6moves[4:6]:
-                return True
         if (not self.check(color)) and self.allmoves(color) == []:
             return True
         return False

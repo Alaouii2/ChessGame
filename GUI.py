@@ -107,6 +107,26 @@ class Cursor:
         self.rect = pygame.Rect(0, 0, SQUAREW, SQUAREH)
 
 
+# Moves
+moves = []
+
+
+def repetition():
+    if len(moves) >= 6:
+        if moves[-5:-7] == moves[-3:-5] == moves[-1:-3]:
+            return True
+
+
+# Takeback
+def takeback():
+    pass
+    # laststart, lastfinish = b.last_move[0], b.last_move[1]
+    # backmove = move.Move(b, lastfinish.coord, laststart.coord)
+    # print(backmove)
+    # b.squares[lastfinish[0]][lastfinish[1]] = lastfinish
+    # b.update(backmove)
+
+
 # initiation
 b.initiate()
 player1 = player.Player('Player1', 'w')
@@ -130,9 +150,11 @@ while run:
             run = 0
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_BACKSPACE:
-                b = b.last_state
-                allowed = []
-                turn -= 1
+                if turn > 1:
+                    takeback()
+                    moves = moves[:-1]
+                    allowed = []
+                    turn -= 1
         if event.type == pygame.MOUSEBUTTONDOWN:
             print('Click')
             if event.button == 1:
@@ -174,15 +196,17 @@ while run:
                             if m.is_legal():
                                 print('legal')
                                 b.update(m)
-                                if b.stalemate(opposite_color(plyer.color)):
+                                if b.stalemate(opposite_color(plyer.color)) and repetition():
                                     print('Stalemate! Tie')
                                     run = 0
                                 if b.checkmate(opposite_color(plyer.color)):
                                     print('Checkmate! {} wins'.format(plyer.name))
                                     run = 0
+                                moves.append(m)
                                 turn += 1
                         print(start_x, start_y, finish_x, finish_y)
-                        if start_x == finish_x and start_y == finish_y and not selected and b.squares[i][j].p.color == plyer.color:
+                        if start_x == finish_x and start_y == finish_y and not selected and b.squares[i][
+                            j].p.color == plyer.color:
                             print('yes')
                             selected = True
                             select_x, select_y = start_x, start_y
@@ -196,12 +220,13 @@ while run:
                             if m.is_legal():
                                 print('legal')
                                 b.update(m)
-                                if b.stalemate(opposite_color(plyer.color)):
+                                if b.stalemate(opposite_color(plyer.color)) and repetition():
                                     print('Stalemate! Tie')
                                     run = 0
                                 if b.checkmate(opposite_color(plyer.color)):
                                     print('Checkmate! {} wins'.format(plyer.name))
                                     run = 0
+                                moves.append(m)
                                 turn += 1
 
     # drawing
