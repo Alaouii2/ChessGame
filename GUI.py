@@ -140,7 +140,6 @@ while run:
                                 for m in b.allmoves(plyer.color, pos=(i, j)):
                                     allowed.append(m)
 
-
         elif event.type == pygame.MOUSEMOTION:
             if dragging:
                 mouse_pos = mouse_x, mouse_y = pygame.mouse.get_pos()
