@@ -123,6 +123,7 @@ class Board:
         self.execute(m)
         if self.promotion:
             self.append_piece(piece.Queen(m.finish.p.color), *m.finish.coord)
+            self.promotion = False
         print(self)
         print(self.last_move)
 
