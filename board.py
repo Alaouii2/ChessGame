@@ -72,6 +72,34 @@ class Board:
     def execute(self, m):
         start = copy(m.start)
         finish = copy(m.finish)
+        kingside = m.king_side_castling()
+        queenside = m.queen_side_castling()
+        self.taken_p.get(opposite_color(finish.p.color)).append(finish.p)
+        self.append_piece(start.p, *finish.coord)
+        self.append_piece(placeholder, *start.coord)
+        if m.en_passant:
+            if finish.p.color == 'w':
+                self.taken_p[finish.p.color].append(self.squares[finish.x + 1][finish.y].p)
+                self.append_piece(placeholder, finish.x + 1, finish.y)
+            else:
+                self.taken_p.get(opposite_color(finish.p.color)).append(self.squares[finish.x - 1][finish.y].p)
+                self.append_piece(placeholder, finish.x - 1, finish.y)
+        if kingside:
+            sqs = self.squares[m.start.x][7]
+            sqf = self.squares[m.start.x][5]
+            self.append_piece(sqs.p, *sqf.coord)
+            self.append_piece(placeholder, *sqs.coord)
+            self.moves.append((start, finish, self.squares[m.start.x][7], self.squares[m.start.x][5]))
+        else:
+            self.moves.append((start, finish))
+        if queenside:
+            sqs = self.squares[m.start.x][0]
+            sqf = self.squares[m.start.x][3]
+            self.append_piece(sqs.p, *sqf.coord)
+            self.append_piece(placeholder, *sqs.coord)
+            self.moves.append((start, finish, sqs, sqf))
+        else:
+            self.moves.append((start, finish))
         if start.p.name == 'k':
             if start.p.color == 'w':
                 self.did_king_move['w'] = True
@@ -88,33 +116,6 @@ class Board:
                     self.did_rook_move['b'][0] = True
                 else:
                     self.did_rook_move['b'][1] = True
-        self.taken_p.get(opposite_color(finish.p.color)).append(finish.p)
-        self.append_piece(start.p, *finish.coord)
-        self.append_piece(placeholder, *start.coord)
-        if m.en_passant:
-            if finish.p.color == 'w':
-                self.taken_p[finish.p.color].append(self.squares[finish.x + 1][finish.y].p)
-                self.append_piece(placeholder, finish.x + 1, finish.y)
-            else:
-                self.taken_p.get(opposite_color(finish.p.color)).append(self.squares[finish.x - 1][finish.y].p)
-                self.append_piece(placeholder, finish.x - 1, finish.y)
-        if m.king_side_castling():
-            print(self.squares[m.start.x][7], self.squares[m.start.x][5])
-            self.append_piece(self.squares[m.start.x][7].p, *self.squares[m.start.x][5].coord)
-            self.append_piece(placeholder, *self.squares[m.start.x][7].coord)
-            self.moves.append((start, finish, self.squares[m.start.x][7], self.squares[m.start.x][5]))
-            print('king side')
-            print(self.squares[m.start.x][7], self.squares[m.start.x][5])
-        else:
-            self.moves.append((start, finish))
-        if m.queen_side_castling():
-            sqs = self.squares[m.start.x][0]
-            sqf = self.squares[m.start.x][3]
-            self.append_piece(sqs.p, *sqf.coord)
-            self.append_piece(placeholder, *sqs.coord)
-            self.moves.append((start, finish, sqs, sqf))
-        else:
-            self.moves.append((start, finish))
 
 
     def update(self, m):

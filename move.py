@@ -184,8 +184,8 @@ def bishop_checker(move):
                         return True
                     else:
                         return False
-                move.taking = True
-                return True
+            move.taking = True
+            return True
         elif move.start.x < move.finish.x:
             for i in range(move.start.x + 1, move.finish.x + 1):
                 if move.board.squares[i][move.start.y - move.start.x + i].p.color != '0':
@@ -195,8 +195,8 @@ def bishop_checker(move):
                         return True
                     else:
                         return False
-                move.taking = True
-                return True
+            move.taking = True
+            return True
     if move.start.x + move.start.y == move.finish.x + move.finish.y:
         if move.start.x > move.finish.x:
             for i in range(move.start.x - 1, move.finish.x - 1, -1):
@@ -207,8 +207,8 @@ def bishop_checker(move):
                         return True
                     else:
                         return False
-                move.taking = True
-                return True
+            move.taking = True
+            return True
         elif move.start.x < move.finish.x:
             for i in range(move.start.x + 1, move.finish.x + 1):
                 if move.board.squares[i][move.start.x + move.start.y - i].p.color != '0':
@@ -219,8 +219,8 @@ def bishop_checker(move):
                         return True
                     else:
                         return False
-                move.taking = True
-                return True
+            move.taking = True
+            return True
     return False
 
 
@@ -235,8 +235,8 @@ def rook_checker(move):
                         return True
                     else:
                         return False
-                move.taking = True
-                return True
+            move.taking = True
+            return True
         elif move.start.y < move.finish.y:
             for i in range(move.start.y + 1, move.finish.y + 1):
                 if move.board.squares[move.start.x][i].p.color != '0':
@@ -246,8 +246,8 @@ def rook_checker(move):
                         return True
                     else:
                         return False
-                move.taking = True
-                return True
+            move.taking = True
+            return True
     elif move.start.y == move.finish.y:
         if move.start.x > move.finish.x:
             for i in range(move.start.x - 1, move.finish.x - 1, -1):
@@ -258,8 +258,8 @@ def rook_checker(move):
                         return True
                     else:
                         return False
-                move.taking = True
-                return True
+            move.taking = True
+            return True
         if move.start.x < move.finish.x:
             for i in range(move.start.x + 1, move.finish.x + 1):
                 if move.board.squares[i][move.start.y].p.color != '0':
@@ -269,7 +269,7 @@ def rook_checker(move):
                         return True
                     else:
                         return False
-                move.taking = True
-                return True
+            move.taking = True
+            return True
     return False
 
