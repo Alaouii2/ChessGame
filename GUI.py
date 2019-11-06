@@ -165,7 +165,7 @@ while run:
             if event.key == pygame.K_BACKSPACE:
                 if moves != [None]:
                     takeback()
-                    moves = moves[:-len(b.last_move)//2]
+                    moves = moves[:-len(b.last_move) // 2]
                     b.last_move = moves[-1]
                     allowed = []
                     turn -= 1
@@ -182,8 +182,6 @@ while run:
                             if b.squares[i][j].p.color == plyer.color:
                                 drag = True
                                 p = b.squares[i][j].p
-                                for m in b.allmoves(plyer.color, pos=(i, j)):
-                                    allowed.append(m)
 
         elif event.type == pygame.MOUSEMOTION:
             if drag:
@@ -193,6 +191,8 @@ while run:
                 mouse_pos = mouse_x, mouse_y = pygame.mouse.get_pos()
                 cursor.rect.center = mouse_pos
                 cursor.p = p
+                for m in b.allmoves(plyer.color, pos=(start_x, start_y)):
+                    allowed.append(m)
 
         elif event.type == pygame.MOUSEBUTTONUP:
             drag = False
@@ -217,15 +217,14 @@ while run:
                                     print('Checkmate! {} wins'.format(plyer.name))
                                     run = 0
                                 turn += 1
-                        print(start_x, start_y, finish_x, finish_y)
-                        if start_x == finish_x and start_y == finish_y and not selected and b.squares[i][
-                            j].p.color == plyer.color:
-                            print('yes')
+                        elif start_x == finish_x and start_y == finish_y and b.squares[i][
+                            j].p.color == plyer.color and not selected:
                             selected = True
                             select_x, select_y = start_x, start_y
                             for m in b.allmoves(plyer.color, pos=(select_x, select_y)):
                                 allowed.append(m)
-                        elif start_x == finish_x and start_y == finish_y and selected:
+                        elif start_x == finish_x and start_y == finish_y and selected and b.squares[i][
+                            j].p.color != plyer.color:
                             print('no')
                             allowed = []
                             selected = False
@@ -240,12 +239,20 @@ while run:
                                     print('Checkmate! {} wins'.format(plyer.name))
                                     run = 0
                                 turn += 1
+                        elif start_x == finish_x and start_y == finish_y and selected and b.squares[i][
+                            j].p.color == plyer.color:
+                            allowed = []
+                            select_x, select_y = start_x, start_y
+                            for m in b.allmoves(plyer.color, pos=(select_x, select_y)):
+                                allowed.append(m)
+
+
     if moves != []:
         if b.last_move != moves[-1]:
             moves.append(b.last_move)
     else:
         moves.append(b.last_move)
-    print(moves)
+    print(selected)
     # drawing
     drawboard(b)
     for m in allowed:
