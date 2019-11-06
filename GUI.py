@@ -26,7 +26,7 @@ FPS = 30
 pygame.init()
 
 # Screen
-screen = pygame.display.set_mode(SIZE, pygame.HWSURFACE | pygame.DOUBLEBUF)
+screen = pygame.display.set_mode(SIZE)
 pygame.display.set_caption(CAPTION)
 pygame.display.set_icon(pygame.image.load(ICON))
 clc = pygame.time.Clock()
@@ -153,7 +153,7 @@ run = 1
 turn = 1
 
 while run:
-    if turn:
+    if turn % 2 == 1:
         plyer = player1
     else:
         plyer = player2
@@ -248,6 +248,8 @@ while run:
     print(moves)
     # drawing
     drawboard(b)
+    for m in allowed:
+        pygame.draw.circle(screen, (0, 200, 10), all_rects[m.finish.x][m.finish.y].center, 5)
     draw_pieces(b)
     if dragging:
         color = (240, 240, 240) if (start_x + start_y) % 2 == 0 else (100, 100, 100)
@@ -256,9 +258,9 @@ while run:
         draw_piece(cursor.p, cursor.rect)
     except AttributeError:
         pass
-    for m in allowed:
-        pygame.draw.circle(screen, (0, 200, 10), all_rects[m.finish.x][m.finish.y].center, 5)
+
     pygame.display.flip()
     clc.tick(FPS)
+
 pygame.quit()
 exit()
