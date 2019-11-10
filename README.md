@@ -7,5 +7,5 @@ main.py can be improved a lot.
 - Could use better output (colors, better spacing ... idk)
 
 To do:
-- GUI (i'm gonna use pygame)
+- GUI (i'm gonna use pygame) (done)
 - AI (minimax and Neural network)
